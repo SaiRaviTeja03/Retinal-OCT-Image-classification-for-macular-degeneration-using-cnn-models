@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - OCT Engine{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h2 class="fw-bold mb-1 text-white"><i class="fas fa-satellite-dish text-primary me-2"></i>Dashboard</h2>
+        <p class="text-muted mb-0">Overview and Classification Control Center</p>
+    </div>
+    <a href="{{ url_for('history') }}" class="btn btn-outline-primary">
+        <i class="fas fa-clock-rotate-left me-2"></i>Analysis Logs
+    </a>
+</div>
+
+<!-- Key Metrics Row -->
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <a href="{{ url_for('history') }}" class="text-decoration-none">
+        <div class="card stat-card bg-primary text-white h-100 p-2 border-0 shadow-sm" style="border-radius: 12px; transform: none; cursor:pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">
+            <div class="card-body text-center">
+                <i class="fas fa-images fa-2x mb-3 text-white"></i>
+                <h6 class="mb-2 fw-semibold text-white text-uppercase tracking-wide" style="font-size: 0.85rem;">Total Predictions</h6>
+                <h2 class="display-6 fw-bold text-white mb-0" id="stat-total">{{ stats.total }}</h2>
+            </div>
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-white" style="opacity: 0.1; filter: blur(30px); pointer-events: none;"></div>
+        </div>
+        </a>
+    </div>
+    
+    <div class="col-md-3">
+        <a href="{{ url_for('history_filter', **{'class': 'NORMAL'}) }}" class="text-decoration-none">
+        <div class="card stat-card bg-success text-white h-100 p-2 border-0 shadow-sm" style="border-radius: 12px; transform: none; cursor:pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">
+            <div class="card-body text-center">
+                <i class="fas fa-check-circle fa-2x mb-3 text-white"></i>
+                <h6 class="mb-2 fw-semibold text-white text-uppercase tracking-wide" style="font-size: 0.85rem;">Normal</h6>
+                <h2 class="display-6 fw-bold text-white mb-0" id="stat-normal">{{ stats.normal }}</h2>
+            </div>
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-white" style="opacity: 0.1; filter: blur(30px); pointer-events: none;"></div>
+        </div>
+        </a>
+    </div>
+    
+    <div class="col-md-3">
+        <a href="{{ url_for('history_filter', **{'class': 'ABNORMAL'}) }}" class="text-decoration-none">
+        <div class="card stat-card bg-warning text-white h-100 p-2 border-0 shadow-sm" style="border-radius: 12px; transform: none; cursor:pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">
+            <div class="card-body text-center">
+                <i class="fas fa-triangle-exclamation fa-2x mb-3 text-white"></i>
+                <h6 class="mb-2 fw-semibold text-white text-uppercase tracking-wide" style="font-size: 0.85rem;">Abnormal</h6>
+                <h2 class="display-6 fw-bold text-white mb-0" id="stat-abnormal">{{ stats.abnormal }}</h2>
+            </div>
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-white" style="opacity: 0.1; filter: blur(30px); pointer-events: none;"></div>
+        </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <a href="{{ url_for('history') }}" class="text-decoration-none">
+        <div class="card stat-card bg-info text-white h-100 p-2 border-0 shadow-sm" style="border-radius: 12px; transform: none; cursor:pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">
+            <div class="card-body text-center">
+                <i class="fas fa-percent fa-2x mb-3 text-white"></i>
+                <h6 class="mb-2 fw-semibold text-white text-uppercase tracking-wide" style="font-size: 0.85rem;">Avg Confidence</h6>
+                <h2 class="display-6 fw-bold text-white mb-0" id="stat-confidence">{{ stats.avg_confidence }}%</h2>
+            </div>
+            <div class="position-absolute top-0 start-0 w-100 h-100 bg-white" style="opacity: 0.1; filter: blur(30px); pointer-events: none;"></div>
+        </div>
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Upload Section -->
+    <div class="col-lg-5">
+        <div class="glass-card h-100">
+            <div class="card-header border-0 d-flex align-items-center">
+                <i class="fas fa-cloud-arrow-up text-primary me-2"></i>
+                <h5 class="fw-bold mb-0 text-white">Upload OCT Scan</h5>
+            </div>
+            <div class="card-body p-4">
+                <form id="uploadForm">
+                    <div class="drop-zone mb-3" id="dropZoneContainer" style="cursor: pointer;" onclick="document.getElementById('file').click()">
+                        <div class="drop-zone-text text-center px-3" style="pointer-events: none;">
+                            <i class="fas fa-layer-group fa-3x mb-3 text-muted"></i>
+                            <h6 class="text-white mb-1">Drag &amp; Drop Image</h6>
+                            <p class="small text-muted mb-3">or click to browse</p>
+                            <span class="btn btn-outline-primary btn-sm">
+                                Browse Files
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Moved file input outside of the click target to avoid bubbling issues -->
+                    <input
+                        type="file"
+                        class="form-control d-none"
+                        id="file"
+                        name="file"
+                        accept=".png,.jpg,.jpeg,.tif,.tiff"
+                        required
+                    >
+                    
+                    <div class="form-text text-danger small fw-medium mt-1 mb-4 text-center">
+                        <i class="fas fa-shield-virus me-1"></i> Strictly retinal OCT images only.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fs-6">
+                        <i class="fas fa-cogs me-2"></i>Run Classification Engine
+                    </button>
+                </form>
+
+                <div class="mt-4" id="uploadStatus"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="col-lg-7">
+        <div class="glass-card h-100">
+            <div class="card-header border-0 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-display text-info me-2"></i>
+                    <h5 class="fw-bold mb-0 text-white">Analysis Output</h5>
+                </div>
+            </div>
+            <div class="card-body p-4 d-flex flex-column align-items-center justify-content-center text-center" id="resultArea" style="min-height: 380px;">
+                <div class="text-muted">
+                    <i class="fas fa-microchip fa-4x mb-3 opacity-25"></i>
+                    <p class="mb-0 fs-5">Awaiting Input Data</p>
+                    <p class="small">Upload an OCT scan to initialize the neural network projection.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Alerts Panel -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="glass-card">
+            <div class="card-header border-0 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-bolt text-warning me-2"></i>
+                    <h6 class="fw-bold mb-0 text-white">System Alerts Stream</h6>
+                </div>
+                <button class="btn btn-sm btn-outline-warning text-uppercase" style="font-size:0.75rem;" onclick="clearAlerts()">Clear Stream</button>
+            </div>
+            <div class="card-body p-0">
+                <div id="alerts-box" class="p-3 bg-dark bg-opacity-25" style="max-height: 200px; overflow-y: auto;">
+                    <div class="text-muted text-center py-4 small">No active subroutines or alerts.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const uploadForm = document.getElementById('uploadForm');
+const uploadStatus = document.getElementById('uploadStatus');
+const resultArea = document.getElementById('resultArea');
+const alertsBox = document.getElementById('alerts-box');
+const fileInput = document.getElementById('file');
+const dropZone = document.getElementById('dropZoneContainer');
+
+// Stats Elements
+const statTotal = document.getElementById('stat-total');
+const statNormal = document.getElementById('stat-normal');
+const statAbnormal = document.getElementById('stat-abnormal');
+const statConfidence = document.getElementById('stat-confidence');
+
+let totalPredictions = parseInt(statTotal.textContent) || 0;
+let normalPredictions = parseInt(statNormal.textContent) || 0;
+let abnormalPredictions = parseInt(statAbnormal.textContent) || 0;
+let avgConfidence = parseFloat(statConfidence.textContent) || 0;
+
+// Drag and Drop Effects
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+});
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, highlight, false);
+});
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, unhighlight, false);
+});
+
+function highlight(e) { dropZone.classList.add('drag-over'); }
+function unhighlight(e) { dropZone.classList.remove('drag-over'); }
+
+dropZone.addEventListener('drop', handleDrop, false);
+function handleDrop(e) {
+    let dt = e.dataTransfer;
+    let files = dt.files;
+    if(files.length) {
+        fileInput.files = files;
+        // visual feedback of file selection
+        dropZone.querySelector('h6').innerHTML = `<i class="fas fa-check-circle text-success me-2"></i>${files[0].name}`;
+    }
+}
+
+fileInput.addEventListener('change', function() {
+    if(this.files.length) {
+        dropZone.querySelector('h6').innerHTML = `<i class="fas fa-check-circle text-success me-2"></i>${this.files[0].name}`;
+    }
+});
+
+uploadForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (!fileInput.files.length) return;
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    uploadStatus.innerHTML = '<div class="alert alert-info border-0 shadow-sm"><i class="fas fa-circle-notch fa-spin me-2"></i>Processing network layers...</div>';
+
+    try {
+        const res = await fetch('{{ url_for("upload_file") }}', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+            uploadStatus.innerHTML = `<div class="alert alert-danger border-0"><i class="fas fa-exclamation-triangle me-2"></i>${data.error}</div>`;
+            return;
+        }
+
+        uploadStatus.innerHTML = '<div class="alert alert-success border-0"><i class="fas fa-check border-0 me-2"></i>Classification complete.</div>';
+
+        const isNormal = data.class === 'NORMAL';
+        const colorClass = isNormal ? 'success' : 'warning';
+        const iconClass = isNormal ? 'fa-check-circle' : 'fa-exclamation-triangle';
+
+        resultArea.classList.remove('justify-content-center', 'text-center');
+        resultArea.innerHTML = `
+            <div class="row g-4 w-100">
+                <div class="col-md-6 text-center">
+                    <img src="${data.image_url}" class="img-fluid border border-glass" alt="OCT Scan">
+                </div>
+                <div class="col-md-6 d-flex flex-column justify-content-center">
+                    <div class="p-4 rounded bg-dark bg-opacity-25 border border-glass h-100 d-flex flex-column justify-content-center">
+                        <h6 class="text-muted text-uppercase tracking-wide mb-1">Diagnosis Core</h6>
+                        <h3 class="fw-bold text-${colorClass} mb-4">
+                            <i class="fas ${iconClass} me-2"></i>${data.class}
+                        </h3>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-light">Confidence Score</span>
+                                <span class="fw-bold text-info">${(data.confidence * 100).toFixed(2)}%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: ${data.confidence * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        updateStats(data);
+        fileInput.value = '';
+        dropZone.querySelector('h6').textContent = 'Drag & Drop Image';
+        loadAlerts();
+
+    } catch (err) {
+        uploadStatus.innerHTML = `<div class="alert alert-danger"><i class="fas fa-bug me-2"></i>System fault: ${err.message}</div>`;
+    }
+});
+
+function updateStats(data) {
+    totalPredictions += 1;
+    if (data.class === 'NORMAL') {
+        normalPredictions += 1;
+    } else {
+        abnormalPredictions += 1;
+    }
+    avgConfidence = (((avgConfidence * (totalPredictions - 1)) + (data.confidence * 100)) / totalPredictions);
+
+    statTotal.textContent = totalPredictions;
+    statNormal.textContent = normalPredictions;
+    statAbnormal.textContent = abnormalPredictions;
+    statConfidence.textContent = avgConfidence.toFixed(2) + '%';
+}
+
+async function loadAlerts() {
+    try {
+        const res = await fetch('{{ url_for("get_alerts") }}');
+        const alerts = await res.json();
+
+        if (!alerts.length) {
+            alertsBox.innerHTML = '<div class="text-muted text-center py-4 small">No active subroutines or alerts.</div>';
+            return;
+        }
+
+        alertsBox.innerHTML = alerts.slice().reverse().map(alert => `
+            <div class="d-flex p-3 mb-2 border-bottom border-glass" style="background: rgba(0,0,0,0.2);">
+                <div class="me-3 mt-1">
+                    <i class="fas fa-circle text-${mapAlert(alert.type)}" style="font-size: 10px;"></i>
+                </div>
+                <div>
+                    <div class="fw-medium text-light">${alert.message}</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;"><i class="fas fa-clock me-1"></i>${alert.timestamp}</div>
+                </div>
+            </div>
+        `).join('');
+    } catch {
+        alertsBox.innerHTML = '<div class="text-danger p-3">Failed to sync alert stream.</div>';
+    }
+}
+
+function mapAlert(type) {
+    if (type === 'error') return 'danger';
+    return type || 'info';
+}
+
+async function clearAlerts() {
+    await fetch('{{ url_for("clear_alerts_route") }}', { method: 'POST' });
+    loadAlerts();
+}
+
+// Initial load
+loadAlerts();
+setInterval(loadAlerts, 8000);
+</script>
+{% endblock %}

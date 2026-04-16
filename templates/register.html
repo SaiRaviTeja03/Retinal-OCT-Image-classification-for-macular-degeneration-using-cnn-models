@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block title %}Register - OCT Engine{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── Page background ── */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: radial-gradient(ellipse at 75% 25%, rgba(14,165,233,0.07) 0%, transparent 55%),
+                radial-gradient(ellipse at 25% 75%, rgba(0,200,255,0.05) 0%, transparent 55%),
+                #080f20;
+}
+
+/* ── Card ── */
+.auth-card {
+    width: 100%;
+    max-width: 520px;          /* slightly wider for 4 fields */
+    background: rgba(12, 20, 40, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 2.75rem 2.5rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* ── Header ── */
+.auth-header { text-align: center; margin-bottom: 2rem; }
+.auth-header h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.3rem;
+    letter-spacing: -0.4px;
+}
+.auth-header p { color: rgba(148,163,184,0.75); font-size: 0.92rem; margin: 0; }
+
+/* ── Labels ── */
+.field-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.75px;
+    color: rgba(148,163,184,0.85);
+    margin-bottom: 0.45rem;
+}
+
+/* ── Input wrapper ── */
+.field-wrap { position: relative; }
+.field-wrap .field-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(148,163,184,0.55);
+    font-size: 0.88rem;
+    pointer-events: none;
+    transition: color 0.25s;
+    z-index: 2;
+}
+.field-wrap:focus-within .field-icon { color: #0ea5e9; }
+
+/* ── Input field ── */
+.field-input {
+    width: 100%;
+    height: 46px;              /* 40–50px */
+    padding: 0 1rem 0 2.8rem;
+    font-size: 0.95rem;
+    color: #f1f5f9;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 10px;
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+    box-sizing: border-box;
+}
+.field-input::placeholder { color: rgba(148,163,184,0.45); }
+.field-input:hover { border-color: rgba(255,255,255,0.17); }
+.field-input:focus {
+    outline: none;
+    background: rgba(14,165,233,0.04);
+    border-color: rgba(14,165,233,0.45);
+    box-shadow: 0 0 0 3px rgba(14,165,233,0.08);
+}
+
+/* ── Two-column row (password fields on desktop) ── */
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* ── Submit button ── */
+.btn-submit {
+    width: 100%;
+    height: 50px;              /* 45–55px */
+    font-size: 0.96rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0ea5e9, #00c8ff);
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 0 4px 18px rgba(14,165,233,0.3);
+    position: relative;
+    overflow: hidden;
+}
+.btn-submit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.45s;
+}
+.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(14,165,233,0.48); }
+.btn-submit:hover::after { transform: translateX(100%); }
+.btn-submit:active { transform: translateY(0); }
+
+/* ── Divider ── */
+.divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    margin: 1.5rem 0;
+}
+
+/* ── Footer link ── */
+.auth-footer { text-align: center; font-size: 0.9rem; color: rgba(148,163,184,0.75); margin: 0; }
+.auth-footer a {
+    color: #0ea5e9;
+    font-weight: 600;
+    text-decoration: none;
+    transition: text-shadow 0.2s;
+}
+.auth-footer a:hover { text-shadow: 0 0 10px rgba(14,165,233,0.7); }
+
+/* ── Mobile ── */
+@media (max-width: 580px) {
+    .auth-card {
+        max-width: 400px;      /* 300–400px mobile */
+        padding: 2rem 1.5rem;
+    }
+    .field-row { grid-template-columns: 1fr; }
+    .auth-header h2 { font-size: 1.5rem; }
+}
+@media (max-width: 380px) {
+    .auth-card { max-width: 320px; padding: 1.75rem 1.25rem; }
+}
+</style>
+{% endblock %}
+
+{% block auth_content %}
+<div class="auth-page">
+    <div class="auth-card">
+
+        <div class="auth-header">
+            <h2>Create Account</h2>
+            <p>Join the OCT classification platform</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show mb-3" role="alert"
+                     style="border-radius:10px; font-size:0.88rem; border:1px solid rgba(255,255,255,0.1); background:rgba(30,41,59,0.9);">
+                    {{ message }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" autocomplete="off">
+            <div class="mb-3">
+                <label class="field-label">Full Name</label>
+                <div class="field-wrap">
+                    <i class="fas fa-user field-icon"></i>
+                    <input type="text" class="field-input" name="name" placeholder="John Doe" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="field-label">Email Address</label>
+                <div class="field-wrap">
+                    <i class="fas fa-envelope field-icon"></i>
+                    <input type="email" class="field-input" name="email" placeholder="you@example.com" required>
+                </div>
+            </div>
+
+            <!-- Password fields side-by-side on desktop -->
+            <div class="field-row mb-4">
+                <div>
+                    <label class="field-label">Password</label>
+                    <div class="field-wrap">
+                        <i class="fas fa-lock field-icon"></i>
+                        <input type="password" class="field-input" name="password" placeholder="Min 6 chars" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="field-label">Confirm Password</label>
+                    <div class="field-wrap">
+                        <i class="fas fa-shield-alt field-icon"></i>
+                        <input type="password" class="field-input" name="confirm_password" placeholder="Re-enter" required>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-check-circle me-2"></i>Create Account
+            </button>
+        </form>
+
+        <hr class="divider">
+
+        <p class="auth-footer">
+            Already have an account?
+            <a href="{{ url_for('login') }}">Sign In</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

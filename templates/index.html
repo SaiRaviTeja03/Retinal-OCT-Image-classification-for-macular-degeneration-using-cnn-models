@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCT Inference Engine - Neural Classification</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .hero {
+            padding: 6rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vh;
+            height: 80vh;
+            background: radial-gradient(circle, rgba(0,240,255,0.1) 0%, transparent 60%);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .isometric-icon {
+            transform: rotateX(20deg) rotateY(-25deg) rotateZ(5deg);
+            filter: drop-shadow(-10px 15px 20px rgba(0, 0, 0, 0.5));
+            transition: all 0.4s ease;
+        }
+        .glass-card:hover .isometric-icon {
+            transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1.1);
+        }
+    </style>
+</head>
+<body class="auth-page-body d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg bg-transparent py-4 fixed-top" style="backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass);">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="#">
+                <i class="fas fa-cubes text-primary fs-3 me-2" style="filter: drop-shadow(0 0 10px rgba(0,240,255,0.5));"></i>
+                <span style="letter-spacing: 1px;">OCT<span class="text-primary">ENGINE</span></span>
+            </a>
+            <div class="ms-auto d-flex gap-3">
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary shadow-glow">Node Login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary d-none d-sm-block">Initialize Connect</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero flex-grow-1 d-flex align-items-center mt-5">
+        <div class="container text-center text-lg-start">
+            <div class="row align-items-center g-5">
+                
+                <div class="col-lg-6">
+                    <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill mb-4 text-uppercase tracking-wide shadow-glow">
+                        <i class="fas fa-satellite-dish me-2"></i>Neural Network v4.2 Active
+                    </div>
+                    <h1 class="display-3 fw-bolder text-white mb-4" style="letter-spacing:-1px; line-height: 1.1;">
+                        Precision Analytics for <span class="text-transparent bg-clip-text" style="background: linear-gradient(to right, #00f0ff, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Macular Diagnostics.</span>
+                    </h1>
+                    <p class="lead text-muted mb-5" style="max-width: 500px;">
+                        State-of-the-art CNN architecture powering sub-second inference on retinal OCT scans, enveloped in an immersive, high-fidelity FinTech aesthetic.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg shadow-glow px-5 py-3 rounded-pill fw-bold">
+                            <i class="fas fa-play me-2"></i> Launch Engine
+                        </a>
+                        <a href="#features" class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill fw-semibold border-glass" style="background: rgba(255,255,255,0.02); backdrop-filter: blur(5px);">
+                            Explore Data
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3D Isometric Visual Area -->
+                <div class="col-lg-6 position-relative">
+                    <div class="glass-card border-0 p-4 p-md-5 text-center shadow-lg position-relative" style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(0, 240, 255, 0.2) !important;">
+                        <i class="fas fa-layer-group text-primary opacity-25" style="font-size: 14rem; position: absolute; right: -20px; bottom: -40px; transform: rotate(-15deg); filter: blur(4px);"></i>
+                        
+                        <div class="isometric-icon mx-auto bg-primary bg-opacity-10 rounded d-flex align-items-center justify-content-center shadow-glow mb-4" style="width:120px; height:120px; border: 1px solid rgba(0,240,255,0.4);">
+                            <i class="fas fa-microchip text-primary" style="font-size: 4rem;"></i>
+                        </div>
+                        
+                        <h4 class="text-white fw-bold">Deep Convolutional Matrix</h4>
+                        <p class="text-muted small mb-0">99.2% Accuracy / 42ms Inference Time</p>
+                        
+                        <div class="mt-4 pt-4 border-top border-glass d-flex justify-content-around">
+                            <div>
+                                <h3 class="text-white mb-0 fw-bold">12K+</h3>
+                                <div class="text-muted small text-uppercase tracking-wide" style="font-size: 10px;">Scans Processed</div>
+                            </div>
+                            <div>
+                                <h3 class="text-white mb-0 fw-bold">4</h3>
+                                <div class="text-muted small text-uppercase tracking-wide" style="font-size: 10px;">Pathology Classes</div>
+                            </div>
+                            <div>
+                                <h3 class="text-info mb-0 fw-bold">0ms</h3>
+                                <div class="text-muted small text-uppercase tracking-wide" style="font-size: 10px;">Downtime</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div id="features" class="container pb-5 mb-5 mt-5 pt-5 border-top border-glass">
+        <div class="text-center mb-5">
+            <h2 class="text-white fw-bold mb-3">System Architecture</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="glass-card h-100 p-4 text-center">
+                    <div class="isometric-icon d-inline-block text-info mb-3 bg-info bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-eye fa-2x"></i>
+                    </div>
+                    <h5 class="text-white fw-bolder">Pathology Detection</h5>
+                    <p class="text-muted small mb-0">CNV, DME, Drusen, and Normal structural identification via advanced neural inference layers.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card h-100 p-4 text-center">
+                    <div class="isometric-icon d-inline-block text-success mb-3 bg-success bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-shield-halved fa-2x"></i>
+                    </div>
+                    <h5 class="text-white fw-bolder">Strict Validation</h5>
+                    <p class="text-muted small mb-0">Rejects structural anomalies, X-rays, and standard photos. Ensures only authentic OCT inputs.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card h-100 p-4 text-center">
+                    <div class="isometric-icon d-inline-block text-warning mb-3 bg-warning bg-opacity-10 p-3 rounded-circle">
+                        <i class="fas fa-chart-network fa-2x"></i>
+                    </div>
+                    <h5 class="text-white fw-bolder">Visual Metrics</h5>
+                    <p class="text-muted small mb-0">Presents algorithmic confidence through dynamic gauges and glassmorphic dashboards.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-black bg-opacity-50 border-top border-glass mt-auto py-4 text-center">
+        <p class="text-muted small mb-0">
+            <i class="fas fa-fingerprint me-2 text-primary"></i>
+            Neural Classification Engine &copy; 2026 / Deep Charcoal & Electric Blue Protocol.
+        </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

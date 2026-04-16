@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block title %}History - OCT Engine{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h2 class="fw-bold mb-1 text-white">
+            <i class="fas fa-layer-group text-primary me-2"></i>Analysis Logs
+            {% if filter_class %}
+                <span class="badge bg-{% if filter_class == 'NORMAL' %}success{% else %}warning{% endif %} ms-2 fs-6">
+                    {{ filter_class }}
+                </span>
+            {% endif %}
+        </h2>
+        <p class="text-muted mb-0">
+            {% if filter_class %}
+                Showing <strong class="text-white">{{ filter_class }}</strong> predictions only
+            {% else %}
+                Historical classification queries
+            {% endif %}
+        </p>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info">
+            <i class="fas fa-desktop me-2"></i>Terminal
+        </a>
+        <!-- Delete Selected button (only visible when rows exist) -->
+        {% if rows %}
+        <button type="button" class="btn btn-outline-warning text-uppercase" style="font-size:0.8rem;" id="deleteSelectedBtn" onclick="submitDeleteSelected()" disabled>
+            <i class="fas fa-minus-circle me-1"></i>Delete Selected
+        </button>
+        {% endif %}
+        <form method="POST" action="{{ url_for('clear_history') }}" onsubmit="return confirm('Delete ALL data logs? This cannot be undone.');">
+            <button type="submit" class="btn btn-danger text-uppercase" style="font-size: 0.85rem; padding: 0.65rem 1rem;">
+                <i class="fas fa-trash-can me-2"></i>Delete All
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Hidden form for selective delete -->
+<form method="POST" action="{{ url_for('delete_selected') }}" id="deleteSelectedForm">
+    <div class="glass-card">
+        <div class="card-body p-0">
+            {% if rows %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background: rgba(255,255,255,0.02);">
+                        <tr>
+                            <th class="ps-4" style="width:44px;">
+                                <input type="checkbox" class="form-check-input" id="selectAll" title="Select All">
+                            </th>
+                            <th>ID</th>
+                            <th>Scan Artifact</th>
+                            <th>Diagnosis</th>
+                            <th>Confidence</th>
+                            <th class="pe-4">Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr class="row-item" data-id="{{ row['id'] }}">
+                            <td class="ps-4 border-glass">
+                                <input type="checkbox" class="form-check-input row-checkbox" name="selected_ids" value="{{ row['id'] }}">
+                            </td>
+                            <td class="border-glass fw-semibold" style="color:#94a3b8;">#{{ row['row_num'] }}</td>
+                            <td class="border-glass">
+                                <a href="{{ url_for('uploaded_file', filename=row['filename']) }}" target="_blank" class="text-info text-decoration-none fw-medium d-flex align-items-center">
+                                    <i class="fas fa-image text-muted me-2"></i>
+                                    <span class="text-truncate" style="max-width: 200px; display:inline-block;">{{ row['filename'] }}</span>
+                                </a>
+                            </td>
+                            <td class="border-glass">
+                                {% if row['predicted_class'] == 'NORMAL' %}
+                                    <span class="badge bg-success shadow-sm"><i class="fas fa-check-circle me-1"></i>{{ row['predicted_class'] }}</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark shadow-sm"><i class="fas fa-exclamation-triangle me-1"></i>{{ row['predicted_class'] }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="border-glass fw-bold {% if row['confidence'] > 0.8 %}text-success{% else %}text-info{% endif %}">
+                                {{ '%.2f'|format(row['confidence'] * 100) }}%
+                            </td>
+                            <td class="border-glass" style="min-width: 160px; font-size: 0.85rem; white-space: nowrap; color:#cbd5e1;">
+                                <i class="fas fa-clock me-1" style="color:#38bdf8; opacity:0.85;"></i>{{ row['created_at'] }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="d-inline-flex mx-auto align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 20px;">
+                    <i class="fas fa-folder-open fa-2x text-muted opacity-50"></i>
+                </div>
+                <h5 class="text-white">Data Archive Empty</h5>
+                <p class="text-muted mb-4 small">
+                    {% if filter_class %}
+                        No <strong>{{ filter_class }}</strong> predictions found.
+                        <a href="{{ url_for('history') }}" class="text-info">View all history</a>
+                    {% else %}
+                        Run classification subroutines from the terminal to generate logs.
+                    {% endif %}
+                </p>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary shadow-glow">
+                    <i class="fas fa-rocket me-2"></i>Run Engine
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Select All checkbox
+const selectAll = document.getElementById('selectAll');
+const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+const deleteBtn = document.getElementById('deleteSelectedBtn');
+
+if (selectAll) {
+    selectAll.addEventListener('change', function() {
+        rowCheckboxes.forEach(cb => cb.checked = this.checked);
+        updateDeleteBtn();
+    });
+}
+
+rowCheckboxes.forEach(cb => {
+    cb.addEventListener('change', updateDeleteBtn);
+});
+
+function updateDeleteBtn() {
+    const anyChecked = [...rowCheckboxes].some(cb => cb.checked);
+    if (deleteBtn) deleteBtn.disabled = !anyChecked;
+}
+
+function submitDeleteSelected() {
+    const checked = [...rowCheckboxes].filter(cb => cb.checked);
+    if (checked.length === 0) return;
+    if (confirm(`Delete ${checked.length} selected record(s)? This cannot be undone.`)) {
+        document.getElementById('deleteSelectedForm').submit();
+    }
+}
+</script>
+{% endblock %}
