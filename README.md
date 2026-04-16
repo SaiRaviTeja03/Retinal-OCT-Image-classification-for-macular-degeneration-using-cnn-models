@@ -72,6 +72,9 @@ Retinal OCT Image Classification for/
    http://localhost:5000
    ```
 
+## Note
+Trained model file (.h5) is not included in this repository due to size limitations. Please train the model using the provided training script or use your own dataset.
+
 ## Usage
 
 ### Uploading and Classifying Images
